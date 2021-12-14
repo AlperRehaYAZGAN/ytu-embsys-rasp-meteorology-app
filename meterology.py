@@ -100,7 +100,8 @@ def loop():
         bmp180_data = read_bmp180_data()
 
         # Print the sensor data
-        print("DHT11: %.2f C, %.2f %%" % (dht11_temp, dht11_humidity))
+        print("DHT11: C ->" , dht11_temp)
+        print("DHT11 Humidity ->", dht11_humidity)
         print("Water Sensor: " + str(water_sensor_data))
         print("MQ5: " + str(mq5_data))
         print("LDR: " + str(ldr_data))
