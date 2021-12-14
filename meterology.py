@@ -15,6 +15,7 @@ water_sensor_pin = 17
 mq5_pin = 27
 ldr_pin = 22
 buzzer_pin = 24
+led_pin = 7
 # bmp180 uses i2c
 bmp180_sda = 2
 bmp180_scl = 3
@@ -29,6 +30,7 @@ def setup():
     GPIO.setup(mq5_pin, GPIO.IN)
     GPIO.setup(ldr_pin, GPIO.IN)
     GPIO.setup(buzzer_pin, GPIO.OUT)
+    GPIO.setup(led_pin, GPIO.OUT)
     # i2c setup
     GPIO.setup(bmp180_sda, GPIO.OUT)
     GPIO.setup(bmp180_scl, GPIO.OUT)
@@ -98,8 +100,12 @@ def loop():
         print("LDR: " + str(ldr_data))
         print("BMP180: " + str(bmp180_data))
 
-        # Wait for 1 second
-        time.sleep(1)
+        # blink led
+        GPIO.output(led_pin, GPIO.HIGH)
+        time.sleep(0.5)
+        GPIO.output(led_pin, GPIO.LOW)
+        time.sleep(0.5)
+
     pass
 
 def end():
