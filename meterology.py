@@ -117,6 +117,7 @@ def end():
 
 
 def main():
+    end()
     setup()
     try:
         loop()
