@@ -6,14 +6,20 @@ import RPi.GPIO as GPIO
 import time
 import sys
 
+HTTP_SERVER = sys.argv[1]
+if(HTTP_SERVER is None):
+    print("Please provide the HTTP Server URL")
+    print("Usage: python3 meteorology.py http://localhost:8080")
+    sys.exit(1)
+
 # get nats_hostname from cmd args
+"""
 nats_hostname = sys.argv[1]
 nats_port = sys.argv[2]
 if(nats_hostname is not None and nats_port is not None):
     print("Usage: python meterology.py <nats_hostname> <nats_port>")
     print("Example: python meterology.py 192.168.1.10 4222")
     exit(1)
-
 
 # docker run -d --name nats-main -p 4222:4222 -p 6222:6222 -p 8222:8222 nats:alpine3.14
 # pip install nats-publish
@@ -25,13 +31,13 @@ nats = NatsPublish(conn_options={
 })
 
 # nats.publish(msg='hello world', subject="foo")
+"""
 
 # DHT11 dependency
 import Adafruit_DHT
 sensor_DHT11 = Adafruit_DHT.DHT11
 
-# nats dependency
-# pip install nats-py
+import requests
 
 
 # setwarning
@@ -65,8 +71,6 @@ def setup():
 
     # pin initial states
     GPIO.output(buzzer_pin, GPIO.LOW)
-
-
     pass
 
 # Register listener function for the sensor data
@@ -85,7 +89,6 @@ def read_dht11_data():
 
 def read_water_sensor_data():
     # Water sensor is Digital Input (GPIO)
-    # readadc pin
     water_sensor_data = GPIO.input(water_sensor_pin)
     return water_sensor_data
     pass
@@ -142,7 +145,22 @@ def loop():
         }
 
         # Send the sensor data to the server
-        nats.publish(msg=json_data, subject="sensor_data")
+        #nats.publish(msg=json_data, subject="sensor_data")
+        try:
+            url = HTTP_SERVER + "/new"
+            query = {
+                "temp": dht11_temp,
+                "humidity": dht11_humidity,
+                "wlevel": water_sensor_data,
+                "air": mq5_data,
+                "lux": ldr_data,
+                "bmp180": bmp180_data
+            }
+            x = requests.get(url, params = c)
+            print(x.text)
+        except:
+            print("Error: unable to send data")
+            pass
 
         # Wait for 1 second
         time.sleep(1)
