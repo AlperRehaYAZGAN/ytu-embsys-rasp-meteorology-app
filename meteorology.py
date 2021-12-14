@@ -158,7 +158,8 @@ def loop():
             }
             x = requests.get(url, params = c)
             print(x.text)
-        except:
+        except Exception as e:
+            print(e)
             print("Error: unable to send data")
             pass
 
@@ -170,7 +171,6 @@ def loop():
         time.sleep(0.5)
         GPIO.output(led_pin, GPIO.LOW)
         time.sleep(0.5)
-
     pass
 
 def end():
