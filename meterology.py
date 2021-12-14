@@ -14,8 +14,11 @@ dht11_pin = 4
 water_sensor_pin = 17
 mq5_pin = 27
 ldr_pin = 22
-bmp180_pin = 23
 buzzer_pin = 24
+# bmp180 uses i2c
+bmp180_sda = 2
+bmp180_scl = 3
+ 
 
 # Register definitions that are used in the sensor data
 def setup():
@@ -25,8 +28,10 @@ def setup():
     GPIO.setup(water_sensor_pin, GPIO.IN)
     GPIO.setup(mq5_pin, GPIO.IN)
     GPIO.setup(ldr_pin, GPIO.IN)
-    GPIO.setup(bmp180_pin, GPIO.IN)
     GPIO.setup(buzzer_pin, GPIO.OUT)
+    # i2c setup
+    GPIO.setup(bmp180_sda, GPIO.OUT)
+    GPIO.setup(bmp180_scl, GPIO.OUT)
 
     # pin initial states
     GPIO.output(buzzer_pin, GPIO.LOW)
@@ -64,9 +69,17 @@ def read_ldr_data():
     pass
 
 def read_bmp180_data():
-    bmp180_data = GPIO.input(bmp180_pin)
-    return bmp180_data
-    pass
+    # git clone https://github.com/adafruit/Adafruit_Python_BMP.git
+    # cd Adafruit_Python_BMP
+    # sudo python setup.py install
+
+    # Read the data from the sensor
+    # bmp180 uses i2c
+    pressure = 0
+
+    # Read the data from the sensor
+    # get pressure from bmp with i2c
+    return pressure
 
 # Read All sensor data then send to server
 def loop():
