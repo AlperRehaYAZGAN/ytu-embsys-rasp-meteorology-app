@@ -156,7 +156,7 @@ def loop():
                 "lux": ldr_data,
                 "bmp180": bmp180_data
             }
-            x = requests.get(url, params = c)
+            x = requests.get(url, params = query)
             print(x.text)
         except Exception as e:
             print(e)
