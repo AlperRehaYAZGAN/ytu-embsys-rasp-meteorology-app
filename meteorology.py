@@ -4,10 +4,35 @@
 """
 import RPi.GPIO as GPIO
 import time
+import sys
+
+# get nats_hostname from cmd args
+nats_hostname = sys.argv[1]
+nats_port = sys.argv[2]
+if(nats_hostname is not None and nats_port is not None):
+    print("Usage: python meterology.py <nats_hostname> <nats_port>")
+    print("Example: python meterology.py 192.168.1.10 4222")
+    exit(1)
+
+
+# docker run -d --name nats-main -p 4222:4222 -p 6222:6222 -p 8222:8222 nats:alpine3.14
+# pip install nats-publish
+from nats_publish import NatsPublish
+
+nats = NatsPublish(conn_options={
+    "hostname": nats_hostname,
+    "port": nats_port
+})
+
+# nats.publish(msg='hello world', subject="foo")
 
 # DHT11 dependency
 import Adafruit_DHT
 sensor_DHT11 = Adafruit_DHT.DHT11
+
+# nats dependency
+# pip install nats-py
+
 
 # setwarning
 GPIO.setwarnings(False)
@@ -18,7 +43,7 @@ water_sensor_pin = 17
 mq5_pin = 27
 ldr_pin = 22
 buzzer_pin = 24
-led_pin = 7
+led_pin = 7 
 # bmp180 uses i2c
 bmp180_sda = 2
 bmp180_scl = 3
@@ -100,12 +125,27 @@ def loop():
         bmp180_data = read_bmp180_data()
 
         # Print the sensor data
-        print("DHT11: C ->" , dht11_temp)
-        print("DHT11 Humidity ->", dht11_humidity)
-        print("Water Sensor: " + str(water_sensor_data))
-        print("MQ5: " + str(mq5_data))
-        print("LDR: " + str(ldr_data))
-        print("BMP180: " + str(bmp180_data))
+        # print("DHT11: C ->" , dht11_temp)
+        # print("DHT11 Humidity ->", dht11_humidity)
+        # print("Water Sensor: " + str(water_sensor_data))
+        # print("MQ5: " + str(mq5_data))
+        # print("LDR: " + str(ldr_data))
+        # print("BMP180: " + str(bmp180_data))
+
+        json_data = {
+            "temperature": dht11_temp,
+            "humidity": dht11_humidity,
+            "water_sensor": water_sensor_data,
+            "mq5": mq5_data,
+            "ldr": ldr_data,
+            "bmp180": bmp180_data
+        }
+
+        # Send the sensor data to the server
+        nats.publish(msg=json_data, subject="sensor_data")
+
+        # Wait for 1 second
+        time.sleep(1)
 
         # blink led
         GPIO.output(led_pin, GPIO.HIGH)
