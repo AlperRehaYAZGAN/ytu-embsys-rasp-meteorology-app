@@ -56,11 +56,14 @@ def read_dht11_data():
     pass
 
 def read_water_sensor_data():
+    # Water sensor is Digital Input (GPIO)
+    # readadc pin
     water_sensor_data = GPIO.input(water_sensor_pin)
     return water_sensor_data
     pass
 
 def read_mq5_data():
+    # MQ5 is Analog Input (GPIO)
     mq5_data = GPIO.input(mq5_pin)
     return mq5_data
     pass
@@ -94,7 +97,7 @@ def loop():
         bmp180_data = read_bmp180_data()
 
         # Print the sensor data
-        print("DHT11 Temperature = {0:0.1f} C Humidity = {1:0.1f} %".format(dht11_temp, dht11_humidity))
+        print("DHT11: %.2f C, %.2f %%" % (dht11_temp, dht11_humidity))
         print("Water Sensor: " + str(water_sensor_data))
         print("MQ5: " + str(mq5_data))
         print("LDR: " + str(ldr_data))
