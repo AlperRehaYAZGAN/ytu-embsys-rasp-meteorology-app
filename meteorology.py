@@ -120,12 +120,14 @@ def read_bmp180_data():
 # Read All sensor data then send to server
 def loop():
     while True:
+        print("Reading Sensor Data...")
         # Read the sensor data
         dht11_humidity, dht11_temp = read_dht11_data()
         water_sensor_data = read_water_sensor_data()
         mq5_data = read_mq5_data()
         ldr_data = read_ldr_data()
         bmp180_data = read_bmp180_data()
+        print("Sensors Data Read")
 
         # Print the sensor data
         # print("DHT11: C ->" , dht11_temp)
@@ -135,18 +137,10 @@ def loop():
         # print("LDR: " + str(ldr_data))
         # print("BMP180: " + str(bmp180_data))
 
-        json_data = {
-            "temperature": dht11_temp,
-            "humidity": dht11_humidity,
-            "water_sensor": water_sensor_data,
-            "mq5": mq5_data,
-            "ldr": ldr_data,
-            "bmp180": bmp180_data
-        }
-
         # Send the sensor data to the server
         #nats.publish(msg=json_data, subject="sensor_data")
         try:
+            print("Sending Sensor Data to Server...")
             url = HTTP_SERVER + "/new"
             query = {
                 "temp": dht11_temp,
@@ -157,6 +151,7 @@ def loop():
                 "bmp180": bmp180_data
             }
             x = requests.get(url, params = query)
+            print("Sensor Data Sent to Server")
             print(x.text)
         except Exception as e:
             print(e)
