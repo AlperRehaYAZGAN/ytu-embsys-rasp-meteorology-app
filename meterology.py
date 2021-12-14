@@ -9,6 +9,9 @@ import time
 import Adafruit_DHT
 sensor_DHT11 = Adafruit_DHT.DHT11
 
+# setwarning
+GPIO.setwarnings(False)
+
 # Definitions of sensor types and their corresponding GPIO pins
 dht11_pin = 4
 water_sensor_pin = 17
