@@ -6,10 +6,10 @@ import RPi.GPIO as GPIO
 import time
 import sys
 
-HTTP_SERVER = sys.argv[1]
-if(HTTP_SERVER is None):
+HTTP_ENDPOINT = sys.argv[1]
+if(HTTP_ENDPOINT is None):
     print("Please provide the HTTP Server URL")
-    print("Usage: python3 meteorology.py http://localhost:8080")
+    print("Usage: python3 meteorology.py http://localhost:8080/new")
     sys.exit(1)
 
 # get nats_hostname from cmd args
@@ -37,6 +37,11 @@ nats = NatsPublish(conn_options={
 import Adafruit_DHT
 sensor_DHT11 = Adafruit_DHT.DHT11
 
+# BMP dependencies
+import Adafruit_BMP.BMP085 as BMP085
+sensor_bmp180 = BMP085.BMP085()
+
+# request dependecies
 import requests
 
 
@@ -105,17 +110,14 @@ def read_ldr_data():
     pass
 
 def read_bmp180_data():
-    # git clone https://github.com/adafruit/Adafruit_Python_BMP.git
-    # cd Adafruit_Python_BMP
-    # sudo python setup.py install
-
-    # Read the data from the sensor
-    # bmp180 uses i2c
-    pressure = 0
+    bmp_temp = sensor_bmp180.read_temperature()
+    bmp_pressure = sensor_bmp180.read_pressure()
+    bmp_altitude = sensor_bmp180.read_altitude()
+    bmp_sealevel_pressure = sensor_bmp180.read_sealevel_pressure()
 
     # Read the data from the sensor
     # get pressure from bmp with i2c
-    return pressure
+    return (bmp_temp, bmp_pressure, bmp_altitude, bmp_sealevel_pressure)
 
 # Read All sensor data then send to server
 def loop():
@@ -126,7 +128,7 @@ def loop():
         water_sensor_data = read_water_sensor_data()
         mq5_data = read_mq5_data()
         ldr_data = read_ldr_data()
-        bmp180_data = read_bmp180_data()
+        (bmp_temp, bmp_pressure, bmp_altitude, bmp_sealevel_pressure) = read_bmp180_data()
         print("Sensors Data Read")
 
         # Print the sensor data
@@ -141,16 +143,18 @@ def loop():
         #nats.publish(msg=json_data, subject="sensor_data")
         try:
             print("Sending Sensor Data to Server...")
-            url = HTTP_SERVER + "/new"
+            # http + temp=23.5&humidity=45.6&pressure=12.3&lux=12.3&is_raining=1&gas_leak=1
             query = {
+                "is_raining" : water_sensor_data,
                 "temp": dht11_temp,
-                "humidity": dht11_humidity,
-                "wlevel": water_sensor_data,
-                "air": mq5_data,
+                "gas_leak": mq5_data,
                 "lux": ldr_data,
-                "bmp180": bmp180_data
+                "bmp_temp": bmp_temp,
+                "bmp_pressure": bmp_pressure,
+                "bmp_altitude": bmp_altitude,
+                "bmp_sealevel_pressure": bmp_sealevel_pressure
             }
-            x = requests.get(url, params = query)
+            x = requests.get(HTTP_ENDPOINT, params = query)
             print("Sensor Data Sent to Server")
             print(x.text)
         except Exception as e:
