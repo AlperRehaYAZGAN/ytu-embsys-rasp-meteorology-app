@@ -39,7 +39,7 @@ sensor_DHT11 = Adafruit_DHT.DHT11
 
 # BMP dependencies
 import Adafruit_BMP.BMP085 as BMP085
-sensor_bmp180 = BMP085.BMP085()
+sensor_bmp180 = BMP085.BMP085(busnum=1, address=0x77)
 
 # request dependecies
 import requests
@@ -71,8 +71,8 @@ def setup():
     GPIO.setup(buzzer_pin, GPIO.OUT)
     GPIO.setup(led_pin, GPIO.OUT)
     # i2c setup
-    GPIO.setup(bmp180_sda, GPIO.OUT)
-    GPIO.setup(bmp180_scl, GPIO.OUT)
+    # GPIO.setup(bmp180_sda, GPIO.OUT)
+    # GPIO.setup(bmp180_scl, GPIO.OUT)
 
     # pin initial states
     GPIO.output(buzzer_pin, GPIO.LOW)
