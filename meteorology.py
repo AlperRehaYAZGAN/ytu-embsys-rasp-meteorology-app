@@ -39,7 +39,8 @@ sensor_DHT11 = Adafruit_DHT.DHT11
 
 # BMP dependencies
 import Adafruit_BMP.BMP085 as BMP085
-sensor_bmp180 = BMP085.BMP085(busnum=1, address=0x77)
+sensor_bmp180 = BMP085.BMP085()
+
 
 # request dependecies
 import requests
@@ -128,7 +129,7 @@ def loop():
         water_sensor_data = read_water_sensor_data()
         mq5_data = read_mq5_data()
         ldr_data = read_ldr_data()
-        (bmp_temp, bmp_pressure, bmp_altitude, bmp_sealevel_pressure) = read_bmp180_data()
+        bmp_temp, bmp_pressure, bmp_altitude, bmp_sealevel_pressure = read_bmp180_data()
         print("Sensors Data Read")
 
         # Print the sensor data
