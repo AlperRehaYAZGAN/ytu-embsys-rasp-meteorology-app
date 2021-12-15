@@ -111,10 +111,10 @@ def read_ldr_data():
     pass
 
 def read_bmp180_data():
-    bmp_temp = sensor_bmp180.read_temperature()
-    bmp_pressure = sensor_bmp180.read_pressure()
-    bmp_altitude = sensor_bmp180.read_altitude()
-    bmp_sealevel_pressure = sensor_bmp180.read_sealevel_pressure()
+    bmp_temp = float(sensor_bmp180.read_temperature())
+    bmp_pressure = float(sensor_bmp180.read_pressure())
+    bmp_altitude = float(sensor_bmp180.read_altitude())
+    bmp_sealevel_pressure = float(sensor_bmp180.read_sealevel_pressure())
 
     # Read the data from the sensor
     # get pressure from bmp with i2c
