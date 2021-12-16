@@ -148,6 +148,7 @@ def loop():
             query = {
                 "is_raining" : water_sensor_data,
                 "temp": dht11_temp,
+                "humidity": dht11_humidity,
                 "gas_leak": mq5_data,
                 "lux": ldr_data,
                 "bmp_temp": bmp_temp,
@@ -157,7 +158,6 @@ def loop():
             }
             x = requests.get(HTTP_ENDPOINT, params = query)
             print("Sensor Data Sent to Server")
-            print(x.text)
         except Exception as e:
             print(e)
             print("Error: unable to send data")
